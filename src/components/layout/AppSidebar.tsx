@@ -53,14 +53,16 @@ export function AppSidebar({ className }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupContent>
             <div className="px-2 mb-2">
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                prefix={<Search className="h-4 w-4 mr-2 text-muted-foreground" />}
-              />
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full pl-9"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                />
+              </div>
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -76,14 +78,6 @@ export function AppSidebar({ className }: AppSidebarProps) {
                   <Link to="/configuration-items" className="flex items-center">
                     <Database className="mr-2 h-5 w-5" />
                     <span>Configuration Items</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/search" className="flex items-center">
-                    <Search className="mr-2 h-5 w-5" />
-                    <span>Search</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
