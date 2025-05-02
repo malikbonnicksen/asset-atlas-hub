@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
@@ -22,13 +22,21 @@ import {
   SidebarGroup,
   SidebarTrigger,
   SidebarFooter,
+  SidebarInput,
 } from "@/components/ui/sidebar";
+import { Input } from "@/components/ui/input";
 
 interface AppSidebarProps {
   className?: string;
 }
 
 export function AppSidebar({ className }: AppSidebarProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <Sidebar className={cn(className)}>
       <SidebarHeader className="flex items-center p-4">
@@ -44,6 +52,16 @@ export function AppSidebar({ className }: AppSidebarProps) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
+            <div className="px-2 mb-2">
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="w-full"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                prefix={<Search className="h-4 w-4 mr-2 text-muted-foreground" />}
+              />
+            </div>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
