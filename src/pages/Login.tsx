@@ -1,6 +1,6 @@
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -36,7 +37,12 @@ type FormValues = z.infer<typeof formSchema>;
 const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const { login } = useAuth();
+
+  // Get the redirect path from location state or default to dashboard
+  const from = location.state?.from?.pathname || "/";
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -49,19 +55,17 @@ const Login = () => {
   const onSubmit = (values: FormValues) => {
     console.log("Login attempt:", values.email);
     
-    // Mock login - in a real app, this would call an authentication API
+    // Use the AuthContext login function instead of directly setting localStorage
     if (values.email && values.password) {
-      // Simulate successful login
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userEmail", values.email);
+      login(values.email);
       
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
       
-      // Redirect to dashboard
-      navigate("/");
+      // Redirect to the page the user was trying to access or dashboard
+      navigate(from);
     }
   };
 
