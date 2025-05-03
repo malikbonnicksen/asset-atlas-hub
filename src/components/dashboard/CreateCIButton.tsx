@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -41,12 +40,15 @@ const formSchema = z.object({
   owner: z.string().min(2, "Owner must be at least 2 characters."),
 });
 
+// Define the form values type to match what addConfigItem expects
+type FormValues = z.infer<typeof formSchema>;
+
 const CreateCIButton: React.FC = () => {
   const { toast } = useToast();
   const [open, setOpen] = React.useState(false);
   
   // Initialize form with validation schema
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -56,9 +58,14 @@ const CreateCIButton: React.FC = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Add the new configuration item
-    const newItem = addConfigItem(values);
+  const onSubmit = (values: FormValues) => {
+    // Add the new configuration item with explicitly typed values
+    const newItem = addConfigItem({
+      name: values.name,
+      type: values.type,
+      status: values.status,
+      owner: values.owner
+    });
     
     // Show success notification
     toast({
