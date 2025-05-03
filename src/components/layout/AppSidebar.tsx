@@ -10,6 +10,7 @@ import {
   FileText,
   Folder,
   Menu,
+  LogOut,
 } from "lucide-react";
 import {
   Sidebar,
@@ -25,6 +26,9 @@ import {
   SidebarInput,
 } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface AppSidebarProps {
   className?: string;
@@ -32,9 +36,21 @@ interface AppSidebarProps {
 
 export function AppSidebar({ className }: AppSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const { logout, userEmail } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+    navigate("/login");
   };
 
   return (
@@ -103,6 +119,13 @@ export function AppSidebar({ className }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">
+        <div className="mb-2 px-2">
+          {userEmail && (
+            <p className="text-sm text-muted-foreground truncate">
+              Logged in as: {userEmail}
+            </p>
+          )}
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
@@ -110,6 +133,12 @@ export function AppSidebar({ className }: AppSidebarProps) {
                 <Settings className="mr-2 h-5 w-5" />
                 <span>Settings</span>
               </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout} className="flex items-center text-destructive w-full">
+              <LogOut className="mr-2 h-5 w-5" />
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
