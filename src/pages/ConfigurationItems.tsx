@@ -8,6 +8,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Database, Menu, Filter, Search } from "lucide-react";
 import CreateCIButton from "@/components/dashboard/CreateCIButton";
 
+// Define the ConfigItem type for type safety
+export interface ConfigItem {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  owner: string;
+  lastUpdated: string;
+}
+
 // Mock data for configuration items
 const mockConfigItems = [
   { 
@@ -60,11 +70,52 @@ const mockConfigItems = [
   },
 ];
 
+// Create a custom event for CI creation
+export const addConfigItem = (newItem: Omit<ConfigItem, "id" | "lastUpdated">) => {
+  // Generate a new ID
+  const newId = `CI-${1000 + Math.floor(Math.random() * 9000)}`;
+  
+  // Get current date
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Create the complete item
+  const completeItem: ConfigItem = {
+    id: newId,
+    name: newItem.name,
+    type: newItem.type,
+    status: newItem.status,
+    owner: newItem.owner,
+    lastUpdated: today
+  };
+  
+  // Dispatch a custom event with the new item data
+  const event = new CustomEvent('ci-created', { detail: completeItem });
+  window.dispatchEvent(event);
+  
+  return completeItem;
+};
+
 const ConfigurationItems: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [configItems, setConfigItems] = useState<ConfigItem[]>(mockConfigItems);
+  
+  // Listen for new CI creation events
+  React.useEffect(() => {
+    const handleCICreated = (event: CustomEvent<ConfigItem>) => {
+      setConfigItems(prev => [event.detail, ...prev]);
+    };
+    
+    // Add event listener
+    window.addEventListener('ci-created', handleCICreated as EventListener);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('ci-created', handleCICreated as EventListener);
+    };
+  }, []);
   
   // Filter configuration items based on search term
-  const filteredItems = mockConfigItems.filter(item => 
+  const filteredItems = configItems.filter(item => 
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.id.toLowerCase().includes(searchTerm.toLowerCase())

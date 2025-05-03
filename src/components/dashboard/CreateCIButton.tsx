@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { addConfigItem } from "@/pages/ConfigurationItems";
 
 // Define form schema with validation rules
 const formSchema = z.object({
@@ -56,8 +57,8 @@ const CreateCIButton: React.FC = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real application, this would send data to an API
-    console.log("Creating new CI with values:", values);
+    // Add the new configuration item
+    const newItem = addConfigItem(values);
     
     // Show success notification
     toast({
