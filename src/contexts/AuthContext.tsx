@@ -14,13 +14,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  // Initialize auth state from localStorage on component mount
   useEffect(() => {
-    // Check for existing login on component mount
     const storedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     const storedEmail = localStorage.getItem("userEmail");
     
-    setIsLoggedIn(storedIsLoggedIn);
-    setUserEmail(storedEmail);
+    if (storedIsLoggedIn && storedEmail) {
+      setIsLoggedIn(true);
+      setUserEmail(storedEmail);
+    }
   }, []);
 
   const login = (email: string) => {
