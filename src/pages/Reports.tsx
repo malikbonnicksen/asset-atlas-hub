@@ -13,6 +13,7 @@ import {
   FileText, 
   FileChartLine 
 } from "lucide-react";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const Reports = () => {
   // Mock reports data
@@ -41,36 +42,38 @@ const Reports = () => {
   ];
 
   return (
-    <div className="flex h-screen">
-      <AppSidebar className="h-screen" />
-      <div className="flex-1 p-8 overflow-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
-          <p className="text-gray-500">
-            View and download reports for your configuration items
-          </p>
-        </div>
+    <SidebarProvider>
+      <div className="flex h-screen">
+        <AppSidebar className="h-screen" />
+        <div className="flex-1 p-8 overflow-auto">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
+            <p className="text-gray-500">
+              View and download reports for your configuration items
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reports.map((report) => (
-            <Card key={report.id} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                <div className="bg-blue-50 p-2 rounded-md">
-                  <report.icon className="h-6 w-6 text-cmdb-blue" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">{report.title}</CardTitle>
-                  <CardDescription className="text-xs">{report.date}</CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">{report.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reports.map((report) => (
+              <Card key={report.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                  <div className="bg-blue-50 p-2 rounded-md">
+                    <report.icon className="h-6 w-6 text-cmdb-blue" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">{report.title}</CardTitle>
+                    <CardDescription className="text-xs">{report.date}</CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600">{report.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
