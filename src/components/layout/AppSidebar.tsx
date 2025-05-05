@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   Database, 
@@ -11,6 +11,10 @@ import {
   Folder,
   Menu,
   LogOut,
+  FolderArchive,
+  FolderInput,
+  FolderOpen,
+  FolderTree,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,6 +28,9 @@ import {
   SidebarTrigger,
   SidebarFooter,
   SidebarInput,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,6 +46,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
   const { logout, userEmail } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -52,6 +60,13 @@ export function AppSidebar({ className }: AppSidebarProps) {
     });
     navigate("/login");
   };
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
+  // Submenu state for Categories
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   return (
     <Sidebar className={cn(className)}>
@@ -82,7 +97,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={isActive("/")}>
                   <Link to="/" className="flex items-center">
                     <LayoutDashboard className="mr-2 h-5 w-5" />
                     <span>Dashboard</span>
@@ -90,7 +105,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={isActive("/configuration-items")}>
                   <Link to="/configuration-items" className="flex items-center">
                     <Database className="mr-2 h-5 w-5" />
                     <span>Configuration Items</span>
@@ -98,20 +113,66 @@ export function AppSidebar({ className }: AppSidebarProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={isActive("/reports")}>
                   <Link to="/reports" className="flex items-center">
                     <FileText className="mr-2 h-5 w-5" />
                     <span>Reports</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              
+              {/* Enhanced Categories Menu */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/categories" className="flex items-center">
-                    <Folder className="mr-2 h-5 w-5" />
-                    <span>Categories</span>
-                  </Link>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={isActive("/categories") || categoriesOpen}
+                  onClick={() => setCategoriesOpen(!categoriesOpen)}
+                >
+                  <div className="flex items-center justify-between w-full cursor-pointer">
+                    <div className="flex items-center">
+                      <Folder className="mr-2 h-5 w-5" />
+                      <span>Categories</span>
+                    </div>
+                    <span className="text-xs bg-gray-200 px-2 py-0.5 rounded-full">5</span>
+                  </div>
                 </SidebarMenuButton>
+                
+                {categoriesOpen && (
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <Link to="/categories" className="flex items-center">
+                          <FolderOpen className="mr-2 h-4 w-4" />
+                          <span>All Categories</span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <Link to="/categories?filter=hardware" className="flex items-center">
+                          <FolderInput className="mr-2 h-4 w-4" />
+                          <span>Hardware</span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <Link to="/categories?filter=software" className="flex items-center">
+                          <FolderArchive className="mr-2 h-4 w-4" />
+                          <span>Software</span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <Link to="/categories?filter=network" className="flex items-center">
+                          <FolderTree className="mr-2 h-4 w-4" />
+                          <span>Network</span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                )}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
@@ -128,7 +189,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild isActive={isActive("/settings")}>
               <Link to="/settings" className="flex items-center">
                 <Settings className="mr-2 h-5 w-5" />
                 <span>Settings</span>
