@@ -11,6 +11,7 @@ import ConfigurationItems from "./pages/ConfigurationItems";
 import Reports from "./pages/Reports";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Categories from "./pages/Categories";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/configuration-items" element={<ConfigurationItems />} />
               <Route path="/reports" element={<Reports />} />
-              <Route path="/categories" element={<NotFound />} />
+              <Route path="/categories" element={<Categories />} />
               <Route path="/settings" element={<NotFound />} />
             </Route>
             
