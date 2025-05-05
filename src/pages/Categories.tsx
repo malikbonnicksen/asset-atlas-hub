@@ -19,10 +19,32 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { CreateCategoryDialog } from "@/components/categories/CreateCategoryDialog";
+import { toast } from "sonner";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+// Define category type
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+  itemCount: number;
+  color: string;
+}
 
 const Categories = () => {
   // Mock categories data
-  const [categories, setCategories] = useState([
+  const [categories, setCategories] = useState<Category[]>([
     {
       id: 1,
       name: "Hardware",
@@ -60,6 +82,17 @@ const Categories = () => {
     }
   ]);
 
+  // Handler to add a new category
+  const handleAddCategory = (category: Category) => {
+    setCategories([...categories, category]);
+  };
+
+  // Handler to delete a category
+  const handleDeleteCategory = (id: number) => {
+    setCategories(categories.filter(category => category.id !== id));
+    toast.success("Category deleted successfully");
+  };
+
   // Get color class based on category color
   const getColorClass = (color: string) => {
     switch(color) {
@@ -85,10 +118,7 @@ const Categories = () => {
                 </SidebarTrigger>
                 <h1 className="text-xl font-semibold">Categories</h1>
               </div>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Category
-              </Button>
+              <CreateCategoryDialog onCategoryCreate={handleAddCategory} />
             </div>
           </header>
 
@@ -127,10 +157,35 @@ const Categories = () => {
                         <FolderEdit className="h-4 w-4 mr-1" />
                         Edit
                       </Button>
-                      <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive">
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{category.name}"? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteCategory(category.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>
