@@ -39,7 +39,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, users } = useAuth();
 
   // Get the redirect path from location state or default to dashboard
   const from = location.state?.from?.pathname || "/";
@@ -55,7 +55,19 @@ const Login = () => {
   const onSubmit = (values: FormValues) => {
     console.log("Login attempt:", values.email);
     
-    // Use the AuthContext login function instead of directly setting localStorage
+    // Check if user exists in the list of registered users
+    const userExists = users.some(user => user.email === values.email);
+    
+    if (!userExists) {
+      toast({
+        title: "Login failed",
+        description: "User not found. Please register first.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Use the AuthContext login function
     if (values.email && values.password) {
       login(values.email);
       
