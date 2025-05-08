@@ -1,14 +1,14 @@
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Trash, Shield, UserPlus, UserMinus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Trash, Shield, UserPlus, UserMinus, Database } from "lucide-react";
 
-import { useAuth, type UserRole, type User } from "@/contexts/AuthContext";
+import { useAuth, type User } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -33,8 +33,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 
 import AppLayout from "@/components/layout/AppLayout";
+import DatabaseConnectionForm from "@/components/settings/DatabaseConnectionForm";
+import DatabaseConnectionsList from "@/components/settings/DatabaseConnectionsList";
 
 const userFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -47,9 +50,10 @@ type UserFormValues = z.infer<typeof userFormSchema>;
 
 const Settings = () => {
   const { users, addUser, removeUser, currentUser, hasRole, deleteAllData } = useAuth();
-  const { toast } = useToast();
+  const { toast: useToastNotification } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const navigate = useNavigate();
+  const [showDatabaseForm, setShowDatabaseForm] = useState(false);
+  const [refreshConnections, setRefreshConnections] = useState(0);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -62,7 +66,7 @@ const Settings = () => {
   const onAddUser = (values: UserFormValues) => {
     // Check if user already exists
     if (users.some(user => user.email === values.email)) {
-      toast({
+      useToastNotification({
         title: "Error",
         description: "User already exists",
         variant: "destructive",
@@ -73,7 +77,7 @@ const Settings = () => {
     // Add new user
     addUser(values.email, values.role);
     
-    toast({
+    useToastNotification({
       title: "Success",
       description: "User added successfully",
     });
@@ -83,7 +87,7 @@ const Settings = () => {
   const handleRemoveUser = (email: string) => {
     // Prevent removing yourself
     if (email === currentUser?.email) {
-      toast({
+      useToastNotification({
         title: "Error",
         description: "You cannot remove your own account",
         variant: "destructive",
@@ -92,7 +96,7 @@ const Settings = () => {
     }
 
     removeUser(email);
-    toast({
+    useToastNotification({
       title: "Success",
       description: "User removed successfully",
     });
@@ -101,10 +105,20 @@ const Settings = () => {
   const handleDeleteAllData = () => {
     deleteAllData();
     setIsDeleteDialogOpen(false);
-    toast({
+    useToastNotification({
       title: "Success",
       description: "All data has been deleted",
     });
+  };
+
+  const handleDatabaseConnectionSubmit = () => {
+    setShowDatabaseForm(false);
+    setRefreshConnections(prev => prev + 1);
+    toast.success("Database connection saved");
+  };
+
+  const handleDeleteConnection = () => {
+    setRefreshConnections(prev => prev + 1);
   };
 
   return (
@@ -262,6 +276,52 @@ const Settings = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Database Connections Section - Only visible to admins */}
+          {hasRole("admin") && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Database className="h-5 w-5 mr-2" />
+                  Database Connections
+                </CardTitle>
+                <CardDescription>
+                  Connect to external databases to import or export data
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {showDatabaseForm ? (
+                  <>
+                    <h3 className="text-lg font-medium mb-2">New Database Connection</h3>
+                    <DatabaseConnectionForm onSubmit={handleDatabaseConnectionSubmit} />
+                    <div className="flex justify-end">
+                      <Button variant="outline" onClick={() => setShowDatabaseForm(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-medium">Configured Connections</h3>
+                      <Button onClick={() => setShowDatabaseForm(true)}>
+                        <Database className="h-4 w-4 mr-2" />
+                        Add Connection
+                      </Button>
+                    </div>
+                    <DatabaseConnectionsList onDelete={handleDeleteConnection} />
+                    
+                    <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Note:</strong> Database connections are stored locally in this demo. 
+                        In a production environment, these would be securely stored on a server.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Danger Zone */}
           {hasRole("admin") && (
