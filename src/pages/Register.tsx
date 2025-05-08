@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -47,7 +46,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { register } = useAuth();
+  const { register, login } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -65,12 +64,16 @@ const Register = () => {
     if (values.email && values.password) {
       register(values.email, values.role);
       
+      // Log the user in automatically after registration
+      login(values.email);
+      
       toast({
         title: "Account created successfully",
-        description: "You can now login with your credentials.",
+        description: "You have been automatically logged in.",
       });
       
-      navigate("/login");
+      // Redirect to dashboard instead of login page
+      navigate("/dashboard");
     }
   };
 
