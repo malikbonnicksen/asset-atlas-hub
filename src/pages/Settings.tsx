@@ -1,9 +1,8 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Trash, Shield, UserPlus, UserMinus, Database, Import, Azure, Cloud } from "lucide-react";
+import { Trash, Shield, UserPlus, UserMinus, Database, Import, Cloud } from "lucide-react";
 
 import { useAuth, type User } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";

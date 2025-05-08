@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Azure, Cloud, Trash } from "lucide-react";
+import { Cloud, Trash } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -80,7 +80,7 @@ const DeviceImportsList = ({ onDelete, refreshTrigger }: DeviceImportsListProps)
   const getSourceIcon = (source: string) => {
     switch (source) {
       case "azure":
-        return <Azure className="h-4 w-4 mr-1 text-blue-500" />;
+        return <Cloud className="h-4 w-4 mr-1 text-blue-500" />;
       case "intune":
         return <Cloud className="h-4 w-4 mr-1 text-green-500" />;
       default:

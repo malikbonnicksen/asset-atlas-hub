@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Azure, Import, Cloud } from "lucide-react";
+import { Import, Cloud } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -115,7 +115,7 @@ const DeviceImport = ({ onImportComplete }: DeviceImportProps) => {
                     <SelectContent>
                       <SelectItem value="azure">
                         <div className="flex items-center">
-                          <Azure className="h-4 w-4 mr-2" />
+                          <Cloud className="h-4 w-4 mr-2 text-blue-500" />
                           Azure
                         </div>
                       </SelectItem>
