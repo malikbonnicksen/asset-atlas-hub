@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Trash, Shield, UserPlus, UserMinus, Database } from "lucide-react";
+import { Trash, Shield, UserPlus, UserMinus, Database, Import, Azure, Cloud } from "lucide-react";
 
 import { useAuth, type User } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -38,6 +38,8 @@ import { toast } from "sonner";
 import AppLayout from "@/components/layout/AppLayout";
 import DatabaseConnectionForm from "@/components/settings/DatabaseConnectionForm";
 import DatabaseConnectionsList from "@/components/settings/DatabaseConnectionsList";
+import DeviceImport from "@/components/settings/DeviceImport";
+import DeviceImportsList from "@/components/settings/DeviceImportsList";
 
 const userFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -54,6 +56,7 @@ const Settings = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [showDatabaseForm, setShowDatabaseForm] = useState(false);
   const [refreshConnections, setRefreshConnections] = useState(0);
+  const [refreshImports, setRefreshImports] = useState(0);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -119,6 +122,10 @@ const Settings = () => {
 
   const handleDeleteConnection = () => {
     setRefreshConnections(prev => prev + 1);
+  };
+
+  const handleDeviceImportComplete = () => {
+    setRefreshImports(prev => prev + 1);
   };
 
   return (
@@ -319,6 +326,34 @@ const Settings = () => {
                     </div>
                   </>
                 )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Device Import Section - Only visible to admins */}
+          {hasRole("admin") && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Import className="h-5 w-5 mr-2" />
+                  Device Management
+                </CardTitle>
+                <CardDescription>
+                  Import devices from Azure or Intune
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">Import History</h3>
+                  <DeviceImport onImportComplete={handleDeviceImportComplete} />
+                </div>
+                <DeviceImportsList onDelete={handleDeviceImportComplete} refreshTrigger={refreshImports} />
+                
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> Import your devices from Azure and Intune to manage them in one place. Credentials are stored locally in this demo.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
