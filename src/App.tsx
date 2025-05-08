@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AppLayout from "./components/layout/AppLayout";
 import Index from "./pages/Index";
 import ConfigurationItems from "./pages/ConfigurationItems";
 import Reports from "./pages/Reports";
@@ -15,6 +16,7 @@ import Register from "./pages/Register";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Categories from "./pages/Categories";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,11 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               {/* Public routes */}
+              <Route path="/" element={
+                <AppLayout hideNavigation>
+                  <LandingPage />
+                </AppLayout>
+              } />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
@@ -47,7 +54,7 @@ const App = () => {
               <Route element={<ProtectedRoute />}>
                 {/* Also check if this is first time visit */}
                 <Route element={<FirstTimeCheck children={<></>} />}>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Index />} />
                   <Route path="/configuration-items" element={<ConfigurationItems />} />
                   <Route path="/reports" element={<Reports />} />
                   <Route path="/categories" element={<Categories />} />
