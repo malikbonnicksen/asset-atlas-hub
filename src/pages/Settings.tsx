@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,21 +71,13 @@ const Settings = () => {
     }
 
     // Add new user
-    const success = addUser(values.email, values.role);
+    addUser(values.email, values.role);
     
-    if (success) {
-      toast({
-        title: "Success",
-        description: "User added successfully",
-      });
-      form.reset();
-    } else {
-      toast({
-        title: "Error",
-        description: "Failed to add user",
-        variant: "destructive",
-      });
-    }
+    toast({
+      title: "Success",
+      description: "User added successfully",
+    });
+    form.reset();
   };
 
   const handleRemoveUser = (email: string) => {
